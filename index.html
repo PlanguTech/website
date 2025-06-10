@@ -13,12 +13,16 @@
       /* Using Inter font as the default */
       body {
         font-family: "Inter", sans-serif;
-        display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
         background-color: #f3f4f6;
-        overflow: hidden;
+        padding: 20px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        width: 1640px;
       }
 
       /* The scene is the 3D space */
@@ -51,20 +55,24 @@
         align-items: center;
         padding: 20px;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        text-align: center;
+        text-align: left;
       }
 
       /* Styling for the front face */
-      .card__face--front {
-        background: white;
-        color: #111827;
+      .row:nth-child(2n+1)
+      .scene:nth-child(2n) .card__face,
+      .row:nth-child(2n)
+      .scene:nth-child(2n+1) .card__face {
+        background-color: #1f2937;
+        color: white;
+        transform: rotateX(10deg);
       }
 
       /* Styling for the back face */
-      .card__face--back {
-        background-color: #1f2937;
-        color: white;
-        transform: rotateY(180deg);
+      .card__face {
+        background: white;
+        color: #111827;
+        transform: rotateX(-10deg);
       }
 
       .logo-text {
@@ -109,176 +117,108 @@
         width: 2rem;
         display: inline;
       }
-      /* Styling for the new click indicator arrow */
-      .click-indicator {
+      .container {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        z-index: 10;
-        transition: opacity 0.3s ease;
-        animation: pulse-grow 2s infinite ease-in-out;
-        pointer-events: none; /* The arrow itself should not be clickable */
-      }
-
-      .card__face--front .click-indicator {
-        color: #1f2937; /* Dark arrow for light background */
-      }
-
-      .card__face--back .click-indicator {
-        color: #ffffff; /* Light arrow for dark background */
-      }
-
-      @keyframes pulse-grow {
-        0% {
-          transform: scale(1);
-          opacity: 0.7;
-        }
-        50% {
-          transform: scale(1.1);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(1);
-          opacity: 0.7;
-        }
+        top: 20px;
+        left: calc(50vw - 410px);
+        padding-bottom: 100px;
       }
     </style>
   </head>
   <body>
-    <div class="scene" aria-label="An animated business card. Click to flip.">
-      <div class="card" id="businessCard">
-        <!-- Front of the card with the initial content -->
-        <div class="card__face card__face--front">
-          <!-- This will be populated by JavaScript -->
-        </div>
-
-        <!-- Back of the card, content will be dynamically inserted -->
-        <div class="card__face card__face--back">
-          <!-- This will be populated by JavaScript -->
-        </div>
-      </div>
-    </div>
-
-    <div class="instructions">Click the card to flip</div>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const card = document.getElementById("businessCard");
-        const frontFace = card.querySelector(".card__face--front");
-        const backFace = card.querySelector(".card__face--back");
-        const clickIndicatorHtml = `
-            <div class="click-indicator">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path></svg>
-            </div>`;
-
-        // --- Define all the content for the card faces ---
-        const facesContent = [
-          { type: "img", path: "./img/logo.svg" },
-          {
-            type: "back",
-            title: "About",
-            text: "PlânguTech is a R&D software development company, with intellectual property in microscopy, hardware automation, digital investigations, with sights on monetization and expansion of it. It's currently in the process of being relocated in Spain.",
-          },
-          {
-            type: "back",
-            title: "Values",
-            text: "The products are aimed to be differentiated through simplicity, mathematical optimization and rigorous product management and quality control. It draws inspiration from principles and methodolgies used at NASA.",
-          },
-          {
-            type: "back",
-            title: "History (1)",
-            text: "The company was founded in 2014 under the name of Shark Software in Prague, Czech Republic, and was focused on custom software development, some of it used by customers such as banks and fortune 500 companies.",
-          },
-          {
-            type: "back",
-            title: "History (2)",
-            text: "In 2016, it started R&D work for its own products. One such initiative lead to the co-founding of <a href=https://caroda.io target=_blank>Caroda</a>, which later became a strong player in the programmatic advertising technology market in CEE. It <a href=https://www.mediaguru.cz/clanky/2025/01/r2b2-kupuje-stoprocentni-podil-ve-spolecnosti-caroda/ target=_blank>was sold</a> in January 2025.",
-          },
-          {
-            type: "back",
-            title: "Services",
-            text: "We're currently not offering any development services to the general market as the main focus is R&D of our next products. We're however always open for a chat.",
-          },
-          {
-            type: "back",
-            title: "Contact",
-            hideClickIndicator: true,
-            text: `
-                <div class="contacts">
-                    <div class="contact">
-                        <a href=https://www.linkedin.com/in/carolplangu/ target=_blank>
-                            <img src="./img/icons8-linkedin-60.png"></img>
-                            /in/carolplangu/
-                        </a>
-                    </div><br>
-                    <div class="contact">
-                        <a href=mailto:info@plangu.com>
-                            <img src="./img/icons8-email-60.png"></img>
-                            info@plangu.com
-                        </a>
+    <div class="container">
+        <div class="row">
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--front">
+                    <img src="./img/logo.svg"></img>
                     </div>
-                </div>`,
-          },
-        ];
-
-        let totalRotation = 0;
-        let currentContentIndex = 0;
-
-        updateFaceContent(frontFace, facesContent[0]);
-
-        // --- Function to update the HTML of a card face ---
-        function updateFaceContent(faceElement, content) {
-          // Use a different structure for the "front" face vs the "back" faces
-          const prefix = content.hideClickIndicator ? "" : clickIndicatorHtml
-          if (content.type === "img") {
-            faceElement.innerHTML =
-              prefix + `<img src="${content.path}"></img>`;
-          } else if (content.type === "front") {
-            faceElement.innerHTML =
-              prefix +
-              `<h1 class="logo-text">${content.title}</h1><p>${content.text}</p>`;
-          } else {
-            faceElement.innerHTML =
-              prefix +
-              `<h3>${content.title}</h3><p>${content.text}</p>`;
-          }
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--back">
+                        <h3>About</h3>
+                        <p>PlânguTech is a R&D software development company, with intellectual property in microscopy, hardware automation, digital investigations, with sights on monetization and expansion of it. It's currently in the process of being relocated in Spain.</p>                
+                    </div>
+                </div>
+            </div>
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--front">
+                        <h3>Values</h3>
+                        <p>The products are aimed to be differentiated through simplicity, mathematical optimization and rigorous product management and quality control. It draws inspiration from principles and methodolgies used at NASA.</p>                
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="scene"></div>
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--front">
+                        <h3>History (1)</h3>
+                        <p>The company was founded in 2014 under the name of Shark Software in Prague, Czech Republic, and was focused on custom software development, some of it used by customers such as banks and fortune 500 companies.</p>                
+                    </div>
+                </div>
+            </div>
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--back">
+                        <h3>History (2)</h3>
+                        <p>In 2016, it started R&D work for its own products. One such initiative lead to the co-founding of <a href=https://caroda.io target=_blank>Caroda</a>, which later became a strong player in the programmatic advertising technology market in CEE. It <a href=https://www.mediaguru.cz/clanky/2025/01/r2b2-kupuje-stoprocentni-podil-ve-spolecnosti-caroda/ target=_blank>was sold</a> in January 2025.</p>                
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="scene"></div>
+            <div class="scene"></div>
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--front">
+                        <h3>Services</h3>
+                        <p>We're currently not offering any development services to the general market as the main focus is R&D of our next products. We're however always open for a chat.</p>                
+                    </div>
+                </div>
+            </div>
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face card__face--front">
+                        <h3>Contact</h3>
+                        <p>
+                            <div class="contacts">
+                                <div class="contact">
+                                    <a href=https://www.linkedin.com/in/carolplangu/ target=_blank>
+                                        <img src="./img/icons8-linkedin-60.png"></img>
+                                        /in/carolplangu/
+                                    </a>
+                                </div><br>
+                                <div class="contact">
+                                    <a href=mailto:info@plangu.com>
+                                        <img src="./img/icons8-email-60.png"></img>
+                                        info@plangu.com
+                                    </a>
+                                </div>
+                            </div>
+                        </p>                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const container = 
+            document.querySelector(".container")
+        const cardFaces = [...document.querySelectorAll(".card__face")]
+        function refreshOffset() {
+            const offsetX = window.scrollY * 2;
+            const offsetDeg = window.screenY
+            container.style.left = `calc(50vw - ${410 + offsetX}px)`;
         }
-
-        // --- Listen for clicks on the card ---
-        card.addEventListener("click", () => {
-          // 1. Calculate the next rotation and content index
-          totalRotation += 180;
-          currentContentIndex += 1;
-
-          if (currentContentIndex >= facesContent.length) {
-            console.log("reached end");
-            const card = document.querySelector(".card");
-            card.style.cursor = "default";
-            return;
-          }
-
-          // 2. Apply the rotation to the card element
-          card.style.transform = `rotateY(${totalRotation}deg)`;
-
-          // 3. Update the content of the appropriate face.
-          // We use a timeout to ensure the content changes when the card is edge-on,
-          // making the transition appear seamless.
-          setTimeout(() => {
-            const nextContent = facesContent[currentContentIndex];
-
-            // Check if the back or front face will be visible after the current flip
-            const isBackVisibleNext = (totalRotation / 180) % 2 !== 0;
-
-            if (isBackVisibleNext) {
-              // If the back will be visible, update the back face's content
-              updateFaceContent(backFace, nextContent);
-            } else {
-              // If the front will be visible, update the front face's content
-              updateFaceContent(frontFace, nextContent);
-            }
-          }, 300); // This delay should be less than half the CSS transition duration
-        });
-      });
+        document.addEventListener("scroll", refreshOffset)
     </script>
   </body>
 </html>
