@@ -93,7 +93,7 @@
       }
 
       body a {
-        color: rgb(83,184,243);
+        color: rgb(83, 184, 243);
         font-weight: bold;
       }
 
@@ -108,6 +108,39 @@
       .contact img {
         width: 2rem;
         display: inline;
+      }
+      /* Styling for the new click indicator arrow */
+      .click-indicator {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+        transition: opacity 0.3s ease;
+        animation: pulse-grow 2s infinite ease-in-out;
+        pointer-events: none; /* The arrow itself should not be clickable */
+      }
+
+      .card__face--front .click-indicator {
+        color: #1f2937; /* Dark arrow for light background */
+      }
+
+      .card__face--back .click-indicator {
+        color: #ffffff; /* Light arrow for dark background */
+      }
+
+      @keyframes pulse-grow {
+        0% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
       }
     </style>
   </head>
@@ -133,6 +166,10 @@
         const card = document.getElementById("businessCard");
         const frontFace = card.querySelector(".card__face--front");
         const backFace = card.querySelector(".card__face--back");
+        const clickIndicatorHtml = `
+            <div class="click-indicator">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path></svg>
+            </div>`;
 
         // --- Define all the content for the card faces ---
         const facesContent = [
@@ -145,7 +182,7 @@
           {
             type: "back",
             title: "Values",
-            text: "The products are aimed to be differentiated through simplicity, mathematical optimization and rigorous product management and quality control - with inspiration from principles and methodolgies used at NASA.",
+            text: "The products are aimed to be differentiated through simplicity, mathematical optimization and rigorous product management and quality control. It draws inspiration from principles and methodolgies used at NASA.",
           },
           {
             type: "back",
@@ -165,6 +202,7 @@
           {
             type: "back",
             title: "Contact",
+            hideClickIndicator: true,
             text: `
                 <div class="contacts">
                     <div class="contact">
@@ -191,12 +229,18 @@
         // --- Function to update the HTML of a card face ---
         function updateFaceContent(faceElement, content) {
           // Use a different structure for the "front" face vs the "back" faces
+          const prefix = content.hideClickIndicator ? "" : clickIndicatorHtml
           if (content.type === "img") {
-            faceElement.innerHTML = `<img src="${content.path}"></img>`;
+            faceElement.innerHTML =
+              prefix + `<img src="${content.path}"></img>`;
           } else if (content.type === "front") {
-            faceElement.innerHTML = `<h1 class="logo-text">${content.title}</h1><p>${content.text}</p>`;
+            faceElement.innerHTML =
+              prefix +
+              `<h1 class="logo-text">${content.title}</h1><p>${content.text}</p>`;
           } else {
-            faceElement.innerHTML = `<h3>${content.title}</h3><p>${content.text}</p>`;
+            faceElement.innerHTML =
+              prefix +
+              `<h3>${content.title}</h3><p>${content.text}</p>`;
           }
         }
 
@@ -204,13 +248,13 @@
         card.addEventListener("click", () => {
           // 1. Calculate the next rotation and content index
           totalRotation += 180;
-          currentContentIndex = currentContentIndex + 1;
+          currentContentIndex += 1;
 
           if (currentContentIndex >= facesContent.length) {
-            console.log("reached end")
-            const card = document.querySelector('.card')
-            card.style.cursor = "default"
-            return
+            console.log("reached end");
+            const card = document.querySelector(".card");
+            card.style.cursor = "default";
+            return;
           }
 
           // 2. Apply the rotation to the card element
