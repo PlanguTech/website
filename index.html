@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlânguTech: software R&D</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="./css/tailwind.4.1.8.js"></script>
+    <style>
+      /* Using Inter font as the default */
+      body {
+        font-family: "Inter", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f3f4f6;
+        overflow: hidden;
+      }
+
+      /* The scene is the 3D space */
+      .scene {
+        width: 400px;
+        height: 250px;
+        perspective: 1000px;
+      }
+
+      /* The card itself, which will be flipped */
+      .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        cursor: pointer;
+      }
+
+      /* Common styles for both front and back faces of the card */
+      .card__face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden; /* Hides the back of the element when it's facing away */
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      /* Styling for the front face */
+      .card__face--front {
+        background: white;
+        color: #111827;
+      }
+
+      /* Styling for the back face */
+      .card__face--back {
+        background-color: #1f2937;
+        color: white;
+        transform: rotateY(180deg);
+      }
+
+      .logo-text {
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.05em;
+      }
+
+      .card__face h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .card__face p {
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+
+      /* Simple instruction text */
+      .instructions {
+        position: absolute;
+        bottom: 20px;
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      body a {
+        color: rgb(83,184,243);
+        font-weight: bold;
+      }
+
+      .contacts {
+        text-align: left;
+        margin-top: 20px;
+      }
+      .contacts,
+      .contact {
+        display: inline-block;
+      }
+      .contact img {
+        width: 2rem;
+        display: inline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scene" aria-label="An animated business card. Click to flip.">
+      <div class="card" id="businessCard">
+        <!-- Front of the card with the initial content -->
+        <div class="card__face card__face--front">
+          <!-- This will be populated by JavaScript -->
+        </div>
+
+        <!-- Back of the card, content will be dynamically inserted -->
+        <div class="card__face card__face--back">
+          <!-- This will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">Click the card to flip</div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const card = document.getElementById("businessCard");
+        const frontFace = card.querySelector(".card__face--front");
+        const backFace = card.querySelector(".card__face--back");
+
+        // --- Define all the content for the card faces ---
+        const facesContent = [
+          { type: "img", path: "./img/logo.svg" },
+          {
+            type: "back",
+            title: "About",
+            text: "PlânguTech is a R&D software development company, with intellectual property in microscopy, hardware automation, digital investigations, with sights on monetization and expansion of it. It's currently in the process of being relocated in Spain.",
+          },
+          {
+            type: "back",
+            title: "Values",
+            text: "The products are aimed to be differentiated through simplicity, mathematical optimization and rigorous product management and quality control - with inspiration from principles and methodolgies used at NASA.",
+          },
+          {
+            type: "back",
+            title: "History (1)",
+            text: "The company was founded in 2014 under the name of Shark Software in Prague, Czech Republic, and was focused on custom software development, some of it used by customers such as banks and fortune 500 companies.",
+          },
+          {
+            type: "back",
+            title: "History (2)",
+            text: "In 2016, it started R&D work for its own products. One such initiative lead to the co-founding of <a href=https://caroda.io target=_blank>Caroda</a>, which later became a strong player in the programmatic advertising technology market in CEE. It <a href=https://www.mediaguru.cz/clanky/2025/01/r2b2-kupuje-stoprocentni-podil-ve-spolecnosti-caroda/ target=_blank>was sold</a> in January 2025.",
+          },
+          {
+            type: "back",
+            title: "Services",
+            text: "We're currently not offering any development services to the general market as the main focus is R&D of our next products. We're however always open for a chat.",
+          },
+          {
+            type: "back",
+            title: "Contact",
+            text: `
+                <div class="contacts">
+                    <div class="contact">
+                        <a href=https://www.linkedin.com/in/carolplangu/ target=_blank>
+                            <img src="./img/icons8-linkedin-60.png"></img>
+                            /in/carolplangu/
+                        </a>
+                    </div><br>
+                    <div class="contact">
+                        <a href=mailto:info@plangu.com>
+                            <img src="./img/icons8-email-60.png"></img>
+                            info@plangu.com
+                        </a>
+                    </div>
+                </div>`,
+          },
+        ];
+
+        let totalRotation = 0;
+        let currentContentIndex = 0;
+
+        updateFaceContent(frontFace, facesContent[0]);
+
+        // --- Function to update the HTML of a card face ---
+        function updateFaceContent(faceElement, content) {
+          // Use a different structure for the "front" face vs the "back" faces
+          if (content.type === "img") {
+            faceElement.innerHTML = `<img src="${content.path}"></img>`;
+          } else if (content.type === "front") {
+            faceElement.innerHTML = `<h1 class="logo-text">${content.title}</h1><p>${content.text}</p>`;
+          } else {
+            faceElement.innerHTML = `<h3>${content.title}</h3><p>${content.text}</p>`;
+          }
+        }
+
+        // --- Listen for clicks on the card ---
+        card.addEventListener("click", () => {
+          // 1. Calculate the next rotation and content index
+          totalRotation += 180;
+          currentContentIndex = currentContentIndex + 1;
+
+          if (currentContentIndex >= facesContent.length) {
+            console.log("reached end")
+            const card = document.querySelector('.card')
+            card.style.cursor = "default"
+            return
+          }
+
+          // 2. Apply the rotation to the card element
+          card.style.transform = `rotateY(${totalRotation}deg)`;
+
+          // 3. Update the content of the appropriate face.
+          // We use a timeout to ensure the content changes when the card is edge-on,
+          // making the transition appear seamless.
+          setTimeout(() => {
+            const nextContent = facesContent[currentContentIndex];
+
+            // Check if the back or front face will be visible after the current flip
+            const isBackVisibleNext = (totalRotation / 180) % 2 !== 0;
+
+            if (isBackVisibleNext) {
+              // If the back will be visible, update the back face's content
+              updateFaceContent(backFace, nextContent);
+            } else {
+              // If the front will be visible, update the front face's content
+              updateFaceContent(frontFace, nextContent);
+            }
+          }, 300); // This delay should be less than half the CSS transition duration
+        });
+      });
+    </script>
+  </body>
+</html>
