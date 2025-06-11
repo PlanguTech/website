@@ -22,13 +22,14 @@
       .row {
         display: flex;
         align-items: center;
-        width: 1640px;
       }
 
       /* The scene is the 3D space */
       .scene {
         width: 400px;
         height: 250px;
+        min-width: 400px;
+        min-height: 250px;
         margin: 3px;
       }
 
@@ -60,14 +61,36 @@
       .scene:nth-child(2n) .card__face,
       .row:nth-child(2n)
       .scene:nth-child(2n+1) .card__face {
-        background-color: #1f2937;
+        background-color: rgb(43, 96, 126);
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
         color: white;
       }
 
+      .row:nth-child(2n+1)
+      .scene:nth-child(2n) .card__face {
+        background-color: rgb(79, 87, 97) !important;
+      }
+
+      .row:nth-child(4n)
+      .scene:nth-child(2n+1) .card__face {
+        background-color: rgb(115, 34, 27) !important;
+      }
+    
+      .row:nth-child(4n)
+      .scene:nth-child(3) .card__face {
+        background-color: rgb(29, 128, 110) !important;
+      }
+
       /* Styling for the back face */
-      .card__face {
-        background: white;
-        color: #111827;
+      .row:nth-child(2n+1)
+      .scene:nth-child(2n+1) .card__face,
+      .row:nth-child(2n)
+      .scene:nth-child(2n) .card__face {
+        background: white !important;
+        color: #111827 !important;
       }
 
       .logo-text {
@@ -112,11 +135,18 @@
         width: 2rem;
         display: inline;
       }
+      .container:not(.loaded) {
+        display: none;
+      }
       .container {
-        position: absolute;
-        top: 20px;
-        left: calc(50vw - 406px * 1.5);
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 20px;
         padding-bottom: 100px;
+      }
+      .copyright {
+        margin-top: 30px;
       }
     </style>
   </head>
@@ -125,7 +155,7 @@
         <div class="row">
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--front">
+                    <div class="card__face">
                     <img src="./img/logo.svg"></img>
                     </div>
                 </div>
@@ -134,7 +164,7 @@
         <div class="row">
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--back">
+                    <div class="card__face">
                         <h3>About</h3>
                         <p>PlânguTech is a R&D software development company, with intellectual property in microscopy, hardware automation, digital investigations, with sights on monetization and expansion of it. It's currently in the process of being relocated in Spain.</p>                
                     </div>
@@ -142,7 +172,7 @@
             </div>
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--front">
+                    <div class="card__face">
                         <h3>Values</h3>
                         <p>The products are aimed to be differentiated through simplicity, mathematical optimization and rigorous product management and quality control. It draws inspiration from principles and methodolgies used at NASA.</p>                
                     </div>
@@ -153,7 +183,7 @@
             <div class="scene"></div>
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--front">
+                    <div class="card__face">
                         <h3>History (1)</h3>
                         <p>The company was founded in 2014 under the name of Shark Software in Prague, Czech Republic, and was focused on custom software development, some of it used by customers such as banks and fortune 500 companies.</p>                
                     </div>
@@ -161,7 +191,7 @@
             </div>
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--back">
+                    <div class="card__face">
                         <h3>History (2)</h3>
                         <p>In 2016, it started R&D work for its own products. One such initiative lead to the co-founding of <a href=https://caroda.io target=_blank>Caroda</a>, which later became a strong player in the programmatic advertising technology market in CEE. It <a href=https://www.mediaguru.cz/clanky/2025/01/r2b2-kupuje-stoprocentni-podil-ve-spolecnosti-caroda/ target=_blank>was sold</a> in January 2025.</p>                
                     </div>
@@ -171,7 +201,7 @@
         <div class="row">
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--front">
+                    <div class="card__face">
                         <h3>Services</h3>
                         <p>We're currently not offering any development services to the general market as the main focus is R&D of our next products. We're however always open for a chat.</p>                
                     </div>
@@ -179,7 +209,7 @@
             </div>
             <div class="scene">
                 <div class="card">
-                    <div class="card__face card__face--front">
+                    <div class="card__face">
                         <h3>Contact</h3>
                         <p>
                             <div class="contacts">
@@ -200,7 +230,88 @@
                     </div>
                 </div>
             </div>
+            <div class="scene">
+                <div class="card">
+                    <div class="card__face">
+                      <h3>Copyright</h3>
+                      <p class="copyright">
+                        <p>© 2014-2025 Shark Software s.r.o.</p>
+                        <p>Rybná 716/24, Staré Město, 110 00<br>Prague, Czech Republic</p>
+                      </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <script>
+      window.addEventListener('scroll', () => {
+        window.requestAnimationFrame(updateGradient);
+      })
+      document.addEventListener('DOMContentLoaded', updateGradient)
+      document.addEventListener('DOMContentLoaded', initLayout)
+
+      const container = document.querySelector('.container')
+
+      function reduceRow(rowEl, maxCols) {
+        const cards = () => [...rowEl.children];
+        const isEmptyCard = (c) => !c.querySelector('.card')
+        while (cards().length > maxCols) {
+          const firstEmptyCard = cards().find(isEmptyCard)
+          if (!firstEmptyCard) {
+            break
+          }
+          firstEmptyCard.remove()
+        }
+        if (cards().length <= maxCols) {
+          return
+        }
+        const newRow = document.createElement('div')
+        newRow.classList.add('row')
+        rowEl.insertAdjacentElement('afterend', newRow)
+        while (cards().length > maxCols) {
+          const lastCard = cards().pop()
+          if (isEmptyCard(lastCard)) {
+            continue
+          }
+          newRow.insertAdjacentElement('afterbegin', lastCard)
+        }
+        while (newRow.children.length < maxCols) {
+          const emptyScene = document.createElement('div')
+          emptyScene.classList.add('scene')
+          newRow.insertAdjacentElement('afterbegin', emptyScene)
+        }
+      }
+
+      function initLayout() {
+        const screenWidth = document.body.getBoundingClientRect().width
+        const rowEls = [...document.querySelectorAll('.row')]
+        if (screenWidth < 1280) {
+          rowEls.forEach((el) => reduceRow(el, 2))
+        }
+        if (screenWidth < 800) {
+          rowEls.forEach((el) => reduceRow(el, 1))
+        }
+        container.classList.add('loaded')
+      }
+
+      function updateGradient() {
+        const parallaxTargets = [...document.querySelectorAll(`
+          .row:nth-child(2n+1) .scene:nth-child(2n) .card__face,
+          .row:nth-child(2n) .scene:nth-child(2n+1) .card__face
+        `), document.body]
+        const scrollY = window.scrollY
+        const screenHeight = document.body.getBoundingClientRect().height
+        const scroll = scrollY / screenHeight
+        const newY = 70 + scroll * 100
+        const backgroundImage = `
+            repeating-conic-gradient(from ${newY}deg at 110% ${newY}%, #ccc 0% 0.05%, transparent 0.05% 3%),
+            repeating-conic-gradient(from ${newY}deg at 110% ${100-newY}%, #ccc 0% 0.05%, transparent 0.05% 3%)
+        `;
+        parallaxTargets.forEach((el) => {
+          const backgroundImageMod = el === document.body ? backgroundImage : backgroundImage.replace(/#ccc/g, '#000')
+          el.style.backgroundImage = backgroundImageMod
+        })
+      }
+    </script>
   </body>
 </html>
