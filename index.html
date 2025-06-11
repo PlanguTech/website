@@ -280,16 +280,18 @@
           emptyScene.classList.add('scene')
           newRow.insertAdjacentElement('afterbegin', emptyScene)
         }
+        if (newRow.children.length > maxCols) {
+          reduceRow(newRow, maxCols)
+        }
       }
 
       function initLayout() {
         const screenWidth = document.body.getBoundingClientRect().width
         const rowEls = [...document.querySelectorAll('.row')]
-        if (screenWidth < 1280) {
-          rowEls.forEach((el) => reduceRow(el, 2))
-        }
         if (screenWidth < 800) {
           rowEls.forEach((el) => reduceRow(el, 1))
+        } else if (screenWidth < 1280) {
+          rowEls.forEach((el) => reduceRow(el, 2))
         }
         container.classList.add('loaded')
       }
