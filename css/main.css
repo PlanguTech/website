@@ -74,7 +74,7 @@ body,
       transparent 0.05% 3%
     ),
     repeating-conic-gradient(
-      from var(--gradient-angle) at 110% var(--gradient-yb),
+      from var(--gradient-angle) at  var(--gradient-ya) -10%,
       var(--gradient-line-color) 0% 0.05%,
       transparent 0.05% 3%
     );

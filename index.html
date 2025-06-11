@@ -173,8 +173,8 @@
         const newY = 70 + scroll * 100
         parallaxTargets.forEach((el) => {
           el.style.setProperty('--gradient-angle', `${newY}deg`)
-          el.style.setProperty('--gradient-ya', `${newY}%`)
-          el.style.setProperty('--gradient-yb', `${100-newY}%`)
+          el.style.setProperty('--gradient-ya', `${100-newY}%`)
+          el.style.setProperty('--gradient-yb', `${newY}%`)
           if (el !== document.body) {
             el.style.setProperty('--gradient-line-color', '#000')
           }
