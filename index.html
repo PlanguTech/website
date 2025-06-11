@@ -17,11 +17,11 @@
         align-items: center;
         min-height: 100vh;
         background-color: #f3f4f6;
-        padding: 20px;
       }
       .row {
         display: flex;
         align-items: center;
+        width: fit-content;
       }
 
       /* The scene is the 3D space */
@@ -144,6 +144,7 @@
         margin-right: auto;
         padding-top: 20px;
         padding-bottom: 100px;
+        max-width: 100vw !important; /* override default tailwind behavior */
       }
       .copyright {
         margin-top: 30px;
@@ -303,7 +304,9 @@
         `), document.body]
         const scrollY = window.scrollY
         const screenHeight = document.body.getBoundingClientRect().height
-        const scroll = scrollY / screenHeight
+        const screenWidth = document.body.getBoundingClientRect().width
+        const isMobile = screenWidth < 800
+        const scroll = (scrollY / screenHeight) * (isMobile ? 0.5 : 1)
         const newY = 70 + scroll * 100
         const backgroundImage = `
             repeating-conic-gradient(from ${newY}deg at 110% ${newY}%, #ccc 0% 0.05%, transparent 0.05% 3%),
