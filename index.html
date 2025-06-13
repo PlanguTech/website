@@ -108,8 +108,16 @@
         </div>
     </div>
     <script>
+      window.isAnimationRunning = false
       window.addEventListener('scroll', () => {
-        window.requestAnimationFrame(updateGradient);
+        if (window.isAnimationRunning) {
+          return
+        }
+        window.isAnimationRunning = true
+        window.requestAnimationFrame(() => {
+          updateGradient()
+          window.isAnimationRunning = false
+        });
       })
       document.addEventListener('DOMContentLoaded', updateGradient)
       document.addEventListener('DOMContentLoaded', initLayout)
